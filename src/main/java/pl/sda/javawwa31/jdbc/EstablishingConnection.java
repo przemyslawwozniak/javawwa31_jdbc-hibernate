@@ -47,10 +47,10 @@ public class EstablishingConnection {
                 System.out.println(result.getString("customerName") + " | " + result.getString("country"));
             }*/
 
-            printPaymentsForYearAndAmountAbove(2004, 10000.0, connection);
+            //printPaymentsForYearAndAmountAbove(2004, 10000.0, connection);
 
-            //List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
-            //System.out.println("10ta pozycja na liscie to: " + payments.get(9));
+            List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
+            System.out.println("10ta pozycja na liscie to: " + payments.get(9));
         }
         catch(SQLException sex) {
             System.err.println("Blad nawiazywania polaczenia z baza danych: " + sex);
@@ -58,8 +58,14 @@ public class EstablishingConnection {
     }
 
     public static void printPaymentsForYearAndAmountAbove(final int year, final double minAmount, final Connection connection) {
-        try {
-            ResultSet resultSet = getResultSetForPaymentForYearAndAmountAbove(year, minAmount, connection);
+        String parametrizedQuery = "select * from payments WHERE paymentDate BETWEEN ? AND ? AND amount > ?";
+
+        try(PreparedStatement prepStmt = connection.prepareStatement(parametrizedQuery)) {
+            prepStmt.setDate(1, Date.valueOf(LocalDate.of(year, 1, 1)));
+            prepStmt.setDate(2, Date.valueOf(LocalDate.of(year, 12, 31)));
+            prepStmt.setDouble(3, minAmount);
+
+            ResultSet resultSet = prepStmt.executeQuery();
             System.out.printf("Oto platnosci za rok %d w kwocie przekraczajacej %f\n", year, minAmount);
             while(resultSet.next()) {
                 System.out.println("Customer number | Check number | Payment date | Amount");
@@ -76,10 +82,15 @@ public class EstablishingConnection {
     }
 
     public static List<Payment> retrievePaymentsForYearAndAmountAbove(final int year, final double minAmount, final Connection connection) {
+        String parametrizedQuery = "select * from payments WHERE paymentDate BETWEEN ? AND ? AND amount > ?";
         List<Payment> payments = new ArrayList<>();
 
-        try {
-            ResultSet resultSet = getResultSetForPaymentForYearAndAmountAbove(year, minAmount, connection);
+        try(PreparedStatement prepStmt = connection.prepareStatement(parametrizedQuery)) {
+            prepStmt.setDate(1, Date.valueOf(LocalDate.of(year, 1, 1)));
+            prepStmt.setDate(2, Date.valueOf(LocalDate.of(year, 12, 31)));
+            prepStmt.setDouble(3, minAmount);
+
+            ResultSet resultSet = prepStmt.executeQuery();
 
             while(resultSet.next()) {
                 payments.add(new Payment(resultSet.getString(1),
@@ -93,23 +104,6 @@ public class EstablishingConnection {
         }
 
         return payments;
-    }
-
-    public static ResultSet getResultSetForPaymentForYearAndAmountAbove(final int year, final double minAmount, final Connection connection) {
-        String parametrizedQuery = "select * from payments WHERE paymentDate BETWEEN ? AND ? AND amount > ?";
-
-        try(PreparedStatement prepStmt = connection.prepareStatement(parametrizedQuery)) {
-            prepStmt.setDate(1, Date.valueOf(LocalDate.of(year, 1, 1)));
-            prepStmt.setDate(2, Date.valueOf(LocalDate.of(year, 12, 31)));
-            prepStmt.setDouble(3, minAmount);
-
-            return prepStmt.executeQuery();
-        }
-        catch(SQLException sex) {
-            System.err.println("Blad odczytu z bazy danych: " + sex);
-        }
-
-        return null;
     }
 
     public static void printProductsWithinProductLineForReturnValue(final double retVal, final ProductLine productLine, final Connection connection) {
