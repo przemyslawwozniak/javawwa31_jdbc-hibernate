@@ -1,6 +1,7 @@
 package pl.sda.javawwa31.jdbc;
 
 import pl.sda.javawwa31.jdbc.domain.Payment;
+import pl.sda.javawwa31.jdbc.domain.ProductLine;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,10 +47,10 @@ public class EstablishingConnection {
                 System.out.println(result.getString("customerName") + " | " + result.getString("country"));
             }*/
 
-            //printPaymentsForYearAndAmountAbove(2004, 10000.0, connection);
+            printPaymentsForYearAndAmountAbove(2004, 10000.0, connection);
 
-            List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
-            System.out.println("10ta pozycja na liscie to: " + payments.get(9));
+            //List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
+            //System.out.println("10ta pozycja na liscie to: " + payments.get(9));
         }
         catch(SQLException sex) {
             System.err.println("Blad nawiazywania polaczenia z baza danych: " + sex);
@@ -86,7 +87,6 @@ public class EstablishingConnection {
                         resultSet.getDate(3),
                         resultSet.getDouble(4)));
             }
-
         }
         catch(SQLException sex) {
             System.err.println("Blad odczytu z bazy danych: " + sex);
@@ -110,6 +110,30 @@ public class EstablishingConnection {
         }
 
         return null;
+    }
+
+    public static void printProductsWithinProductLineForReturnValue(final double retVal, final ProductLine productLine, final Connection connection) {
+        //TO-DO: 1. napisac SQL query - najpierw sprawdzic w Workbench
+        String parametrizedQuery = "select...";
+
+        try(PreparedStatement prepStmt = connection.prepareStatement(parametrizedQuery)) {
+            //TO-DO: 2. uzupelnic parametry, w szczegolnosci productLine z enuma
+            prepStmt.setString(1, productLine.toString());  //1 odpowiada kolumnie productLine
+
+            ResultSet resultSet = prepStmt.executeQuery();
+            //TO-DO: 3. odpowiednio zaimplementowac wyswietlanie danych
+            while(resultSet.next()) {
+                System.out.println("Customer number | Check number | Payment date | Amount");
+                System.out.printf("%s | %s | %s | %f\n",
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getDate(3),
+                        resultSet.getDouble(4));
+            }
+        }
+        catch(SQLException sex) {
+            System.err.println("Blad odczytu z bazy danych: " + sex);
+        }
     }
 
 }
