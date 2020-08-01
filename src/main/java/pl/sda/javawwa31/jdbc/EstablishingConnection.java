@@ -26,6 +26,7 @@ public class EstablishingConnection {
         //od tej linii obiekt klasy Properties zawiera odczytana konfiguracje
         try(Connection connection = DriverManager.getConnection(
                 configuration.get("db.url").toString() + "?serverTimezone=" + TimeZone.getDefault().getID(),
+                //configuration.get("db.url").toString()
                 configuration.get("db.user").toString(),
                 configuration.get("db.pswd").toString()
         )) {
