@@ -49,8 +49,10 @@ public class EstablishingConnection {
 
             //printPaymentsForYearAndAmountAbove(2004, 10000.0, connection);
 
-            List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
-            System.out.println("10ta pozycja na liscie to: " + payments.get(9));
+            /*List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
+            System.out.println("10ta pozycja na liscie to: " + payments.get(9));*/
+
+            printProductsWithinProductLineForReturnValue(1.0, ProductLine.CLASSIC_CARS, connection);
         }
         catch(SQLException sex) {
             System.err.println("Blad nawiazywania polaczenia z baza danych: " + sex);
@@ -106,23 +108,27 @@ public class EstablishingConnection {
         return payments;
     }
 
+    /*
+    Cwiczenie #1: Bazujac na metodzie printPaymentsForYearAndAmountAbove napisz wlasna metode, ktora z tabeli 'products' wypisze produkty, ktore generuja zarobek okreslony jako
+        (msrp-buyPrice)/buyprice>0.75
+    i przynaleza do zadanej kategorii productLine = Motorcycles, Classic Cars itd.)
+     */
     public static void printProductsWithinProductLineForReturnValue(final double retVal, final ProductLine productLine, final Connection connection) {
-        //TO-DO: 1. napisac SQL query - najpierw sprawdzic w Workbench
-        String parametrizedQuery = "select...";
+        String parametrizedQuery = "select * from products where (MSRP-buyPrice)/buyPrice > ? AND productLine=?;";
 
         try(PreparedStatement prepStmt = connection.prepareStatement(parametrizedQuery)) {
-            //TO-DO: 2. uzupelnic parametry, w szczegolnosci productLine z enuma
-            prepStmt.setString(1, productLine.toString());  //1 odpowiada kolumnie productLine
+            prepStmt.setDouble(1, retVal);
+            prepStmt.setString(2, productLine.toString());  //1 odpowiada kolumnie productLine
 
             ResultSet resultSet = prepStmt.executeQuery();
-            //TO-DO: 3. odpowiednio zaimplementowac wyswietlanie danych
+            System.out.printf("Oto produkty, ktore przynosza zarobek co najmniej %f i naleza do kategorii %s\n",
+                    retVal, productLine.toString());
             while(resultSet.next()) {
-                System.out.println("Customer number | Check number | Payment date | Amount");
-                System.out.printf("%s | %s | %s | %f\n",
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getDate(3),
-                        resultSet.getDouble(4));
+                System.out.println("Product name | Product Vendor | MSRP");
+                System.out.printf("%s | %s | %f\n",
+                        resultSet.getString("productName"),
+                        resultSet.getString("productVendor"),
+                        resultSet.getDouble("MSRP"));
             }
         }
         catch(SQLException sex) {

@@ -18,11 +18,18 @@ public enum ProductLine {
             return "Classic Cars";
         }
     },
-    MOTORCYCLES {
+    VINTAGE_CARS {
         @Override
         public String toString() {
-            return "Motorcycles";
+            return "Vintage Cars";
         }
-    }
+    },
+    //lamiemy konwencje zapisu, ale potrzebujemy aby toString=name zwracal wartosc taka jak oczekiwana przez db
+    Motorcycles,
+    Planes,
+    Ships,
+    Trains,
+    Trucks,
+    Buses
 
 }
