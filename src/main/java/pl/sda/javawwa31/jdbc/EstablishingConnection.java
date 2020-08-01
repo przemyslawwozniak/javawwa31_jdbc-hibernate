@@ -1,5 +1,6 @@
 package pl.sda.javawwa31.jdbc;
 
+import pl.sda.javawwa31.jdbc.domain.Office;
 import pl.sda.javawwa31.jdbc.domain.Payment;
 import pl.sda.javawwa31.jdbc.domain.ProductLine;
 
@@ -10,7 +11,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
 
 public class EstablishingConnection {
 
@@ -52,12 +52,27 @@ public class EstablishingConnection {
             /*List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
             System.out.println("10ta pozycja na liscie to: " + payments.get(9));*/
 
-            //printProductsWithinProductLineForReturnValue(1.0, ProductLine.CLASSIC_CARS, connection);
+            //printProductsWithinProductLineForReturnValue(0.75, ProductLine.CLASSIC_CARS, connection);
 
             /*Payment payment = new Payment("114", "yumyum7", LocalDate.now(), 10000.0);
             insert(payment, connection);*/
 
-            deleteOrder(10100, connection);
+            //deleteOrder(10100, connection);
+
+            /*Payment payment = new Payment("114", "yumyum7", LocalDate.now(), 500.0);
+            updatePayment(payment, connection);*/
+
+            Office warsawOffice = Office.builder()
+                                    .officeCode("8")
+                                    .city("Warsaw")
+                                    .phone("+48 22 777 55 22")
+                                    .addressLine1("Pelczynskiego 14D/100")
+                                    .country("Poland")
+                                    .postalCode("01-471")
+                                    .teritory("EMEA")
+                                    .build();
+
+            insert(warsawOffice, connection);
         }
         catch(SQLException sex) {
             System.err.println("Blad nawiazywania polaczenia z baza danych: " + sex);
@@ -146,7 +161,7 @@ public class EstablishingConnection {
         final String query = "insert into payments values(?,?,?,?)";
 
         try(PreparedStatement prepStmt = connection.prepareStatement(query)) {
-            prepStmt.setString(1, payment.getCustomerName());
+            prepStmt.setString(1, payment.getCustomerNumber());
             prepStmt.setString(2, payment.getCheckNo());
             prepStmt.setDate(3, java.sql.Date.valueOf(payment.getDate()));
             prepStmt.setDouble(4, payment.getAmount());
@@ -167,6 +182,66 @@ public class EstablishingConnection {
 
             final int rowsAffected = prepStmt.executeUpdate();
             System.out.println("Deleted " + rowsAffected + " rows.");
+        }
+        catch(SQLException sex) {
+            System.err.println("Blad odczytu z bazy danych: " + sex);
+        }
+    }
+
+    //lepiej rozbic na metody aktualizujace poszczegolne pola - antypattern
+    //problem: i tak nie mozna przekazac payment.date == null, poniewaz konstruktor jest nierozwiazywalny
+    public static void updatePayment(final Payment payment, final Connection connection) {
+        String query = "";
+        if(payment.getAmount() > 0.0 && payment.getDate() != null)
+            query = "update payments set amount=?,paymentDate=? where customerNumber=? AND checkNumber=?";
+        else if(payment.getAmount() > 0.0)
+            query = "update payments set amount=? where customerNumber=? AND checkNumber=?";
+        else if(payment.getDate() != null)
+            query = "update payments set paymentDate=? where customerNumber=? AND checkNumber=?";
+
+        try(PreparedStatement prepStmt = connection.prepareStatement(query)) {
+            if(payment.getAmount() > 0.0 && payment.getDate() != null) {
+                prepStmt.setDouble(1, payment.getAmount());
+                prepStmt.setDate(2, java.sql.Date.valueOf(payment.getDate()));
+                prepStmt.setString(3, payment.getCustomerNumber());
+                prepStmt.setString(4, payment.getCheckNo());
+            }
+            else if(payment.getAmount() > 0.0) {
+                prepStmt.setDouble(1, payment.getAmount());
+                prepStmt.setString(2, payment.getCustomerNumber());
+                prepStmt.setString(3, payment.getCheckNo());
+            }
+            else if(payment.getDate() != null) {
+                prepStmt.setDate(1, java.sql.Date.valueOf(payment.getDate()));
+                prepStmt.setString(2, payment.getCustomerNumber());
+                prepStmt.setString(3, payment.getCheckNo());
+            }
+
+            final int rowsAffected = prepStmt.executeUpdate();
+            System.out.println("Updated " + rowsAffected + " row(s).");
+        }
+        catch(SQLException sex) {
+            System.err.println("Blad odczytu z bazy danych: " + sex);
+        }
+    }
+
+    //insert into offices values(8, 'Warsaw', '22456789', 'ulica testowa', 'ul test 2', 'Maz', 'Poland', 22222, 'POLAND');
+    public static void insert(final Office office, final Connection connection) {
+        final String query = "insert into offices values(?,?,?,?,?,?,?,?,?)";
+
+        try(PreparedStatement prepStmt = connection.prepareStatement(query)) {
+            prepStmt.setString(1, office.getOfficeCode());
+            prepStmt.setString(2, office.getCity());
+            prepStmt.setString(3, office.getPhone());
+            prepStmt.setString(4, office.getAddressLine1());
+            prepStmt.setString(5, office.getAddressLine2());
+            prepStmt.setString(6, office.getState());
+            prepStmt.setString(7, office.getCountry());
+            prepStmt.setString(9, office.getTeritory());
+            prepStmt.setString(8, office.getPostalCode());
+
+            final int rowsAffected = prepStmt.executeUpdate();
+            System.out.println("Inserted " + rowsAffected + " rows.");
         }
         catch(SQLException sex) {
             System.err.println("Blad odczytu z bazy danych: " + sex);
