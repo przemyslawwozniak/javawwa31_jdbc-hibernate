@@ -52,7 +52,12 @@ public class EstablishingConnection {
             /*List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
             System.out.println("10ta pozycja na liscie to: " + payments.get(9));*/
 
-            printProductsWithinProductLineForReturnValue(1.0, ProductLine.CLASSIC_CARS, connection);
+            //printProductsWithinProductLineForReturnValue(1.0, ProductLine.CLASSIC_CARS, connection);
+
+            /*Payment payment = new Payment("114", "yumyum7", LocalDate.now(), 10000.0);
+            insert(payment, connection);*/
+
+            deleteOrder(10100, connection);
         }
         catch(SQLException sex) {
             System.err.println("Blad nawiazywania polaczenia z baza danych: " + sex);
@@ -130,6 +135,38 @@ public class EstablishingConnection {
                         resultSet.getString("productVendor"),
                         resultSet.getDouble("MSRP"));
             }
+        }
+        catch(SQLException sex) {
+            System.err.println("Blad odczytu z bazy danych: " + sex);
+        }
+    }
+
+    //inserting into database example
+    public static void insert(final Payment payment, final Connection connection) {
+        final String query = "insert into payments values(?,?,?,?)";
+
+        try(PreparedStatement prepStmt = connection.prepareStatement(query)) {
+            prepStmt.setString(1, payment.getCustomerName());
+            prepStmt.setString(2, payment.getCheckNo());
+            prepStmt.setDate(3, java.sql.Date.valueOf(payment.getDate()));
+            prepStmt.setDouble(4, payment.getAmount());
+
+            final int rowsAffected = prepStmt.executeUpdate();
+            System.out.println("Inserted " + rowsAffected + " rows.");
+        }
+        catch(SQLException sex) {
+            System.err.println("Blad odczytu z bazy danych: " + sex);
+        }
+    }
+
+    public static void deleteOrder(final int orderNumber, final Connection connection) {
+        final String query = "delete from orders where orderNumber=?";
+
+        try(PreparedStatement prepStmt = connection.prepareStatement(query)) {
+            prepStmt.setInt(1, orderNumber);
+
+            final int rowsAffected = prepStmt.executeUpdate();
+            System.out.println("Deleted " + rowsAffected + " rows.");
         }
         catch(SQLException sex) {
             System.err.println("Blad odczytu z bazy danych: " + sex);
