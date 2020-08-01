@@ -52,7 +52,12 @@ public class EstablishingConnection {
             /*List<Payment> payments = retrievePaymentsForYearAndAmountAbove(2004, 10000.0, connection);
             System.out.println("10ta pozycja na liscie to: " + payments.get(9));*/
 
-            //printProductsWithinProductLineForReturnValue(0.75, ProductLine.CLASSIC_CARS, connection);
+            System.out.println("Zysk min 75%:");
+            printProductsWithinProductLineForReturnValue(0.75, ProductLine.CLASSIC_CARS, connection);
+            System.out.println("Zysk min 100%:");
+            printProductsWithinProductLineForReturnValue(1.0, ProductLine.CLASSIC_CARS, connection);
+            System.out.println("Zysk min 150%:");
+            printProductsWithinProductLineForReturnValue(1.5, ProductLine.CLASSIC_CARS, connection);
 
             /*Payment payment = new Payment("114", "yumyum7", LocalDate.now(), 10000.0);
             insert(payment, connection);*/
@@ -62,7 +67,7 @@ public class EstablishingConnection {
             /*Payment payment = new Payment("114", "yumyum7", LocalDate.now(), 500.0);
             updatePayment(payment, connection);*/
 
-            Office warsawOffice = Office.builder()
+            /*Office warsawOffice = Office.builder()
                                     .officeCode("8")
                                     .city("Warsaw")
                                     .phone("+48 22 777 55 22")
@@ -72,7 +77,7 @@ public class EstablishingConnection {
                                     .teritory("EMEA")
                                     .build();
 
-            insert(warsawOffice, connection);
+            insert(warsawOffice, connection);*/
         }
         catch(SQLException sex) {
             System.err.println("Blad nawiazywania polaczenia z baza danych: " + sex);
