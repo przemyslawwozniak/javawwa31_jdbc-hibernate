@@ -3,6 +3,7 @@ package pl.sda.javawwa31.jdbc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -29,20 +30,46 @@ public class EstablishingConnection {
                 configuration.get("db.user").toString(),
                 configuration.get("db.pswd").toString());
 
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(query);
+            //Statement statement = connection.createStatement();
+            //ResultSet result = statement.executeQuery(query);
         ) {
             System.out.println("Nawiazano polaczenie z baza danych.");
 
-            System.out.println("Oto nasi klienci z podzialem na kraje");
+            /*System.out.println("Oto nasi klienci z podzialem na kraje");
             System.out.println("Client name | Country");
 
             while(result.next()) {
                 System.out.println(result.getString("customerName") + " | " + result.getString("country"));
-            }
+            }*/
+
+            printPaymentsForYearAndAmountAbove(2004, 10000.0, connection);
         }
         catch(SQLException sex) {
             System.err.println("Blad nawiazywania polaczenia z baza danych: " + sex);
+        }
+    }
+
+    public static void printPaymentsForYearAndAmountAbove(final int year, final double minAmount, final Connection connection) {
+        String parametrizedQuery = "select * from payments WHERE paymentDate BETWEEN ? AND ? AND amount > ?";
+
+        try(PreparedStatement prepStmt = connection.prepareStatement(parametrizedQuery)) {
+            prepStmt.setDate(1, Date.valueOf(LocalDate.of(year, 1, 1)));
+            prepStmt.setDate(2, Date.valueOf(LocalDate.of(year, 12, 31)));
+            prepStmt.setDouble(3, minAmount);
+
+            ResultSet resultSet = prepStmt.executeQuery();
+            System.out.printf("Oto platnosci za rok %d w kwocie przekraczajacej %f\n", year, minAmount);
+            while(resultSet.next()) {
+                System.out.println("Customer number | Check number | Payment date | Amount");
+                System.out.printf("%s | %s | %s | %f\n",
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getDate(3),
+                        resultSet.getDouble(4));
+            }
+        }
+        catch(SQLException sex) {
+            System.err.println("Blad odczytu z bazy danych: " + sex);
         }
     }
 
