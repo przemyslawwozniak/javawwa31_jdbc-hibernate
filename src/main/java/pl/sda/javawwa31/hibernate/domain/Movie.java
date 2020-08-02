@@ -28,7 +28,8 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "MOVIES")
+@Entity
+@Table(name = "MOVIES")
 public class Movie {
 
     @Id

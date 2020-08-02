@@ -15,8 +15,10 @@ import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity(name = "COPIES")
+@Entity
+@Table(name = "COPIES")
 public class Copy {
 
     @Id

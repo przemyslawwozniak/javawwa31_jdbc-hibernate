@@ -27,7 +27,8 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "RENTS")
+@Entity
+@Table(name = "RENTS")
 public class Rent {
 
     @Id
