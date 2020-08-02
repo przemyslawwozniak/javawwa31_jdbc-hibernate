@@ -53,19 +53,34 @@ public class DefaultMovieService implements MovieService {
         return m;
     }
 
+    //wersja z zastosowaniem Session#merge aby przywrocic obiekt w stan persistent i by bylo 'managed object'
     @Override
+    public Movie updateMovie(Movie movie) {
+        Movie dbMovie = findMovie(movie.getTitle());    //po wykonaniu metody - detached (session zostaje zamknieta)
+        if(dbMovie != null) {
+            Session session = DefaultSessionService.getSession();
+            Transaction tx = session.beginTransaction();
+            dbMovie.overrideWithNonNullFields(movie);
+            session.merge(dbMovie); //dbMovie przechodzi w stan persistent po ID
+            tx.commit();
+            DefaultColoredOutputService.print(DefaultColoredOutputService.ANSI_YELLOW, "DefaultMovieService: Zaktualizowano wpis w tabeli MOVIES dla rekordu " + movie.getTitle());
+        }
+        return dbMovie;
+    }
+
+    //wersja ze wspoldzieleniem sesji wewnatrz metody
+    /*@Override
     public Movie updateMovie(Movie movie) {
         final Session session = DefaultSessionService.getSession();
         Movie dbMovie = findMovie(movie.getTitle(), session);
         if(dbMovie != null) {
             Transaction tx = session.beginTransaction();
             dbMovie.overrideWithNonNullFields(movie);
-            //session.save(dbMovie);
             tx.commit();
             DefaultColoredOutputService.print(DefaultColoredOutputService.ANSI_YELLOW, "DefaultMovieService: Zaktualizowano wpis w tabeli MOVIES dla rekordu " + movie.getTitle());
         }
         return dbMovie;
-    }
+    }*/
 
     private Movie findMovie(String title, final Session session) {
         Query<Movie> query = session.createQuery("from Movie m where m.title=:title", Movie.class);

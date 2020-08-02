@@ -92,6 +92,7 @@ public class DefaultMovieServiceTest {
         movieService.updateMovie(updated);
 
         Movie afterUpdate = movieService.findMovie("Random Movie");
+        System.out.println("Po aktualizacji, odczyt z DB: " + afterUpdate);
 
         //then:
         Assertions.assertThat(afterUpdate).isEqualToIgnoringNullFields(updated)
