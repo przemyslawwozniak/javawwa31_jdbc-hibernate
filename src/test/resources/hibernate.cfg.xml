@@ -17,5 +17,8 @@
         <!-- Klasy mapowane -->
         <mapping class="pl.sda.javawwa31.hibernate.domain.SimpleMovie"/>
         <mapping class="pl.sda.javawwa31.hibernate.domain.Movie"/>
+        <mapping class="pl.sda.javawwa31.hibernate.domain.Copy"/>
+        <mapping class="pl.sda.javawwa31.hibernate.domain.Customer"/>
+        <mapping class="pl.sda.javawwa31.hibernate.domain.Rent"/>
     </session-factory>
 </hibernate-configuration>
