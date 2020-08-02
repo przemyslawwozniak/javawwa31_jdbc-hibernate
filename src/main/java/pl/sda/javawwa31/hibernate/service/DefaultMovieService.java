@@ -72,4 +72,9 @@ public class DefaultMovieService implements MovieService {
         query.setParameter("title", title);
         return query.uniqueResult();
     }
+
+    @Override
+    public boolean deleteMovie(String title) {
+        return false;
+    }
 }

@@ -19,4 +19,6 @@ public interface MovieService {
      */
     Movie updateMovie(Movie movie);
 
+    boolean deleteMovie(String title);
+
 }
