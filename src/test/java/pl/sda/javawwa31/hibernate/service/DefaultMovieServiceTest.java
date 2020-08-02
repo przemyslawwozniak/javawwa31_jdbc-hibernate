@@ -1,6 +1,7 @@
 package pl.sda.javawwa31.hibernate.service;
 
 import org.assertj.core.api.Assertions;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 import pl.sda.javawwa31.hibernate.domain.Genre;
 import pl.sda.javawwa31.hibernate.domain.Movie;
@@ -73,6 +74,35 @@ public class DefaultMovieServiceTest {
                 .hasFieldOrPropertyWithValue("releaseDate", LocalDate.of(1996, 2, 14))
                 .hasFieldOrPropertyWithValue("description", null)
                 .as("Film nie zostal dodany do tabeli w bazie danych, pomimo, ze nie istnial.");
+    }
+
+    @Test
+    public void updates_existing_movie() {
+        //given:
+        movieService.findOrCreateMovie("Random Movie", Genre.Thriller, LocalDate.of(1996, 2, 14));
+
+        //when:
+        Movie updated = Movie.builder()
+                .title("Random Movie")
+                .genre(Genre.Comedy)
+                .releaseDate(LocalDate.of(2020, 8, 2))
+                .description("Our custom favourite movie! :)")
+                .build();
+
+        movieService.updateMovie(updated);
+
+        Movie afterUpdate = movieService.findMovie("Random Movie");
+
+        //then:
+        Assertions.assertThat(afterUpdate).isEqualToIgnoringNullFields(updated)
+                .as("Film nie zostal zaktualizowany.");
+    }
+
+    //TO-DO
+    @Ignore
+    @Test
+    public void does_not_update_non_existing_movie() {
+
     }
 
 }

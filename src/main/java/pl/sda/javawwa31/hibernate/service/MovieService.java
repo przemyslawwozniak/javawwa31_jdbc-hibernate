@@ -11,4 +11,12 @@ public interface MovieService {
     Movie findOrCreateMovie(String title, Genre genre, LocalDate releaseDate);
     Movie createMovie(String title, Genre genre, LocalDate releaseDate, String description);
 
+    /**
+     * Lookups movie by given title in database and updates fields according to passed non-null fields from movie instance
+     *
+     * @param movie
+     * @return
+     */
+    Movie updateMovie(Movie movie);
+
 }

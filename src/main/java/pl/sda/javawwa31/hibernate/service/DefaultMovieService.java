@@ -52,4 +52,24 @@ public class DefaultMovieService implements MovieService {
 
         return m;
     }
+
+    @Override
+    public Movie updateMovie(Movie movie) {
+        final Session session = DefaultSessionService.getSession();
+        Movie dbMovie = findMovie(movie.getTitle(), session);
+        if(dbMovie != null) {
+            Transaction tx = session.beginTransaction();
+            dbMovie.overrideWithNonNullFields(movie);
+            //session.save(dbMovie);
+            tx.commit();
+            DefaultColoredOutputService.print(DefaultColoredOutputService.ANSI_YELLOW, "DefaultMovieService: Zaktualizowano wpis w tabeli MOVIES dla rekordu " + movie.getTitle());
+        }
+        return dbMovie;
+    }
+
+    private Movie findMovie(String title, final Session session) {
+        Query<Movie> query = session.createQuery("from Movie m where m.title=:title", Movie.class);
+        query.setParameter("title", title);
+        return query.uniqueResult();
+    }
 }
