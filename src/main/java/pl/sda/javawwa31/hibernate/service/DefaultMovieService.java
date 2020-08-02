@@ -12,7 +12,7 @@ public class DefaultMovieService implements MovieService {
 
     @Override
     public Movie findMovie(String title) {
-        Query<Movie> query = DefaultSessionService.getSession().createQuery("from Movie m where m.title:=title", Movie.class);
+        Query<Movie> query = DefaultSessionService.getSession().createQuery("from Movie m where m.title=:title", Movie.class);
         query.setParameter("title", title);
         return query.uniqueResult();    //zwraca encje lub null
     }
