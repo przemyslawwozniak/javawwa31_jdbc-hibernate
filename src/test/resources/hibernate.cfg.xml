@@ -20,5 +20,9 @@
         <mapping class="pl.sda.javawwa31.hibernate.domain.Copy"/>
         <mapping class="pl.sda.javawwa31.hibernate.domain.Customer"/>
         <mapping class="pl.sda.javawwa31.hibernate.domain.Rent"/>
+        <mapping class="pl.sda.javawwa31.hibernate.relations.Email"/>
+        <mapping class="pl.sda.javawwa31.hibernate.relations.Message"/>
+        <mapping class="pl.sda.javawwa31.hibernate.relations.EmailMapped"/>
+        <mapping class="pl.sda.javawwa31.hibernate.relations.MessageMapped"/>
     </session-factory>
 </hibernate-configuration>
