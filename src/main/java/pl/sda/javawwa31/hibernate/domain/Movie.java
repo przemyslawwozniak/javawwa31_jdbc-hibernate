@@ -35,6 +35,9 @@ import java.util.List;
 @AfterFirstEverDVDRelease   //custom validation
 @Entity
 @Table(name = "MOVIES")
+@NamedQueries({
+        @NamedQuery(name = "movie.findByCompany", query = "from Movie m where m.company=:company")
+})
 public class Movie {
 
     @Id
@@ -68,6 +71,8 @@ public class Movie {
     @DecimalMin("0.0")
     @DecimalMax("10.0")
     double avgScore;
+
+    String company;
 
     /**
      * Overrides this instance fields with non-null fields of other instance.
