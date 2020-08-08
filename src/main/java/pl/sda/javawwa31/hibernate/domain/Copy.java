@@ -12,10 +12,7 @@ CREATE TABLE IF NOT EXISTS copies (
 
 import org.hibernate.annotations.ColumnDefault;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "COPIES")
@@ -24,6 +21,9 @@ public class Copy {
     @Id
     @GeneratedValue
     Long id;
+
+    @ManyToOne
+    Rent rent;
 
     @ColumnDefault("false")
     boolean isRented;

@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -26,6 +27,9 @@ public class Customer {
     @Id
     @GeneratedValue
     Long id;
+
+    @OneToMany(mappedBy = "customer")
+    List<Rent> rents;
 
     @Column(nullable = false)
     String fullName;
