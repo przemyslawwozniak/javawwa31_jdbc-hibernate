@@ -100,4 +100,8 @@ public class Movie {
     public String getDescription() {
         return description;
     }
+
+    public List<Copy> getCopies() {
+        return copies;
+    }
 }

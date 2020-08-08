@@ -3,13 +3,89 @@ package pl.sda.javawwa31.hibernate.relations;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.testng.annotations.Test;
+import pl.sda.javawwa31.hibernate.domain.*;
 import pl.sda.javawwa31.hibernate.service.DefaultSessionService;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 public class RelationsTest {
+
+    @Test
+    public void rent_relates_to_customer_and_copy_AND_copy_relates_to_movie() {
+        Long rentId, customerId, copyId, movieId;
+        Rent rent;
+        Customer customer;
+        Copy copy;
+        Movie movie;
+
+        try(Session session = DefaultSessionService.getSession()) {
+            Transaction tx = session.beginTransaction();
+
+            rent = Rent.builder()
+                    .rentPricePerDay(new BigDecimal("3.25"))
+                    .borrowedDate(LocalDate.now())
+                    .status(RentStatus.IN_RENT)
+                    .build();
+            customer = Customer.builder()
+                    .fullName("Przemyslaw Wozniak")
+                    .phone("777 777 777")
+                    .address("Pelczynskiego 14D/150")
+                    .build();
+            movie = Movie.builder()
+                    .title("Ogniem i mieczem")
+                    .genre(Genre.Historical)
+                    .releaseDate(LocalDate.of(1999, 2, 8))
+                    .build();
+            copy = new Copy();
+
+            //relacja rent - customer zarzadza rent
+            rent.setCustomer(customer);
+            //relacja rent - copy zarzadza rent
+            rent.setCopy(copy);
+            //relacja copy - movie zarzadza copy
+            copy.setMovie(movie);
+
+            session.save(rent);
+            session.save(customer);
+            session.save(movie);
+            session.save(copy);
+
+            rentId = rent.getId();
+            customerId = customer.getId();
+            movieId = movie.getId();
+            copyId = copy.getId();
+
+            tx.commit();
+        }
+
+        assertNotNull(rent.getCopy());
+        assertNull(copy.getRent());
+        assertNotNull(rent.getCustomer());
+        assertNull(customer.getRents());
+
+        assertNotNull(copy.getMovie());
+        assertNull(movie.getCopies());
+
+        try(Session session = DefaultSessionService.getSession()) {
+            rent = session.get(Rent.class, rentId);
+            copy = session.get(Copy.class, copyId);
+            movie = session.get(Movie.class, movieId);
+            customer = session.get(Customer.class, customerId);
+        }
+
+        //po odczytaniu z bazy danych i uwzglednieniu kolumny FK, relacje w JVM zostaja poprawnie ustanowione
+        assertNotNull(rent.getCopy());
+        assertNotNull(copy.getRent());
+        assertNotNull(rent.getCustomer());
+        assertNotNull(customer.getRents());
+        assertNotNull(copy.getMovie());
+        assertNotNull(movie.getCopies());
+    }
 
     @Test
     public void testNonManagedRelationship() {

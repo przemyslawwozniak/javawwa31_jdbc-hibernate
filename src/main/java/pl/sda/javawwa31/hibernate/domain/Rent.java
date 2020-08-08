@@ -74,4 +74,20 @@ public class Rent {
     public LocalDate getReturnedDate() {
         return returnedDate;
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Copy getCopy() {
+        return copy;
+    }
+
+    public void setCopy(Copy copy) {
+        this.copy = copy;
+    }
 }

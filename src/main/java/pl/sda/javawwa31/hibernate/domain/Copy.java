@@ -42,4 +42,16 @@ public class Copy {
     public void setRented(boolean rented) {
         isRented = rented;
     }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
+
+    public Rent getRent() {
+        return rent;
+    }
 }
