@@ -23,6 +23,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @ToString
@@ -35,6 +36,9 @@ public class Movie {
     @Id
     @GeneratedValue
     Long id;
+
+    @OneToMany(mappedBy = "movie")
+    List<Copy> copies;
 
     @Column(nullable = false)
     String title;

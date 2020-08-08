@@ -23,6 +23,9 @@ public class Copy {
     Long id;
 
     @ManyToOne
+    Movie movie;
+
+    @OneToOne(mappedBy = "copy")
     Rent rent;
 
     @ColumnDefault("false")

@@ -23,7 +23,6 @@ import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -39,8 +38,8 @@ public class Rent {
     @ManyToOne
     Customer customer;
 
-    @OneToMany(mappedBy = "rent")
-    List<Copy> copies;
+    @OneToOne
+    Copy copy;
 
     @ColumnDefault("0") //default ordinal = 0 = IN_RENT
     @Column(nullable = false)
