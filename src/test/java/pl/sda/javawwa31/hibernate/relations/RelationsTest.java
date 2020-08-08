@@ -3,6 +3,8 @@ package pl.sda.javawwa31.hibernate.relations;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.testng.annotations.Test;
+import pl.sda.javawwa31.hibernate.cascading.EmailCascading;
+import pl.sda.javawwa31.hibernate.cascading.MessageCascading;
 import pl.sda.javawwa31.hibernate.domain.*;
 import pl.sda.javawwa31.hibernate.service.DefaultSessionService;
 
@@ -241,6 +243,52 @@ public class RelationsTest {
         //DB
         assertNull(email.getMessage()); //poniewaz FK do email znajduje sie po stronie msg a nie zostalo ustawione to nadpisany obiekt email utracil ref do msg
         assertNull(msg.getEmail()); //email nigdy nie zostal powiazany z msg poprzez FK
+    }
+
+    @Test
+    public void cascading_persist() {
+        Long emailId, msgId;
+        EmailCascading email;
+        MessageCascading msg, msg2;
+
+        try(Session session = DefaultSessionService.getSession()) {
+            Transaction tx = session.beginTransaction();
+
+            email = new EmailCascading();
+            email.setSubject("JavaWWA13");
+            msg = new MessageCascading();
+            msg.setContent("See you @02.02.2019!");
+
+            email.setMessage(msg);
+            msg.setEmail(email);
+
+            session.persist(email);
+            //session.save(msg);    //1 -> 'odpalane' dzieki CASCADE.PERSIST
+
+            emailId = email.getId();
+            //msgId = msg.getId();    //dzieki (1) msg ma ustawione pole ID (zostaje zapisane w DB)
+
+            tx.commit();
+        }
+
+        //JVM
+        assertEquals(email.getSubject(), "JavaWWA13");
+        assertEquals(msg.getContent(), "See you @02.02.2019!");
+        assertNotNull(email.getMessage());  //dla JVM jest ustawione pole msg dla email
+        assertNotNull(msg.getEmail()); //ale nie jest ustawione pole email dla msg
+
+        try(Session session = DefaultSessionService.getSession()) {
+            email = session.get(EmailCascading.class, emailId);    //nadpisz ref do email obiektem z bazy danych
+            msg = email.getMessage();
+            msg2 = session.get(MessageCascading.class, email.getMessage().getId());
+        }
+
+        //DB
+        assertNotNull(email);
+        assertNotNull(msg);
+        assertNotNull(msg2);
+        assertEquals(msg.getContent(), "See you @02.02.2019!");
+        assertEquals(msg2.getContent(), "See you @02.02.2019!");
     }
 
 }

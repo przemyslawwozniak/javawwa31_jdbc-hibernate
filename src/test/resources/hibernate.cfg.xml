@@ -24,5 +24,7 @@
         <mapping class="pl.sda.javawwa31.hibernate.relations.Message"/>
         <mapping class="pl.sda.javawwa31.hibernate.relations.EmailMapped"/>
         <mapping class="pl.sda.javawwa31.hibernate.relations.MessageMapped"/>
+        <mapping class="pl.sda.javawwa31.hibernate.cascading.EmailCascading"/>
+        <mapping class="pl.sda.javawwa31.hibernate.cascading.MessageCascading"/>
     </session-factory>
 </hibernate-configuration>
