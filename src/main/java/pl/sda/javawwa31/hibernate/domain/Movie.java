@@ -22,6 +22,7 @@ import lombok.ToString;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -41,7 +42,8 @@ public class Movie {
     @OneToMany(mappedBy = "movie", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     List<Copy> copies;
 
-    @Column(nullable = false)
+    @Column//(nullable = false)
+    @NotNull(message = "Title must not be null")
     String title;
 
     @Column(nullable = false)
@@ -54,11 +56,16 @@ public class Movie {
     //domyslnie String mapuje sie na varchar[255]
     //my chcemy mapowac na TEXT
     @Type(type = "text")
+    @Size(min = 100, max = 500)
     String description;
 
     //to pole ma nie byc zapisywane w bazie danych
     @Transient
     long daysFromRelease;
+
+    @DecimalMin("0.0")
+    @DecimalMax("10.0")
+    double avgScore;
 
     /**
      * Overrides this instance fields with non-null fields of other instance.
