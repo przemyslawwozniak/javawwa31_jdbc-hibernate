@@ -23,6 +23,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Builder
@@ -55,6 +56,10 @@ public class Movie {
     @Type(type = "text")
     String description;
 
+    //to pole ma nie byc zapisywane w bazie danych
+    @Transient
+    long daysFromRelease;
+
     /**
      * Overrides this instance fields with non-null fields of other instance.
      *
@@ -79,6 +84,11 @@ public class Movie {
         }
 
         return isInstanceChanged;
+    }
+
+    @PostLoad
+    public void calcDaysFromRelease() {
+        this.daysFromRelease = ChronoUnit.DAYS.between(releaseDate, LocalDate.now());
     }
 
     public Long getId() {
@@ -107,5 +117,9 @@ public class Movie {
 
     public void setCopies(List<Copy> copies) {
         this.copies = copies;
+    }
+
+    public long getDaysFromRelease() {
+        return daysFromRelease;
     }
 }
