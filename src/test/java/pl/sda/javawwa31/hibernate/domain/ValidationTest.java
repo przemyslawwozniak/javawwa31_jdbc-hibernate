@@ -10,6 +10,42 @@ import java.time.LocalDate;
 
 public class ValidationTest {
 
+    @Test
+    public void movie_validation_success() {
+        //given
+        Movie movie = Movie.builder()
+                .title("Ogniem i mieczem")
+                .genre(Genre.Historical)
+                .releaseDate(LocalDate.of(1999, 2, 8))
+                .description("Polski film historyczny z 1999 roku, w reżyserii Jerzego Hoffmana, na podstawie powieści Henryka Sienkiewicza pod tym samym tytułem.")
+                .avgScore(8.5)
+                .build();
+
+        try(Session session = DefaultSessionService.getSession()) {
+            Transaction tx = session.beginTransaction();
+            session.save(movie);
+            tx.commit();
+        }
+    }
+
+    @Test(expectedExceptions = {ConstraintViolationException.class})
+    public void movie_validation_breaks_on_custom_release_date_validation() {
+        //given
+        Movie movie = Movie.builder()
+                .title("Ogniem i mieczem")
+                .genre(Genre.Historical)
+                .releaseDate(LocalDate.of(1995, 2, 8))
+                .description("Polski film historyczny z 1999 roku, w reżyserii Jerzego Hoffmana, na podstawie powieści Henryka Sienkiewicza pod tym samym tytułem.")
+                .avgScore(8.5)
+                .build();
+
+        try(Session session = DefaultSessionService.getSession()) {
+            Transaction tx = session.beginTransaction();
+            session.save(movie);
+            tx.commit();
+        }
+    }
+
     @Test(expectedExceptions = {ConstraintViolationException.class})
     public void movie_validation_breaks_on_missing_title() {
         //given
@@ -88,24 +124,6 @@ public class ValidationTest {
                 .releaseDate(LocalDate.of(1999, 2, 8))
                 .description("Polski film historyczny z 1999 roku, w reżyserii Jerzego Hoffmana, na podstawie powieści Henryka Sienkiewicza pod tym samym tytułem.")
                 .avgScore(-7.0)
-                .build();
-
-        try(Session session = DefaultSessionService.getSession()) {
-            Transaction tx = session.beginTransaction();
-            session.save(movie);
-            tx.commit();
-        }
-    }
-
-    @Test
-    public void movie_validation_success() {
-        //given
-        Movie movie = Movie.builder()
-                .title("Ogniem i mieczem")
-                .genre(Genre.Historical)
-                .releaseDate(LocalDate.of(1999, 2, 8))
-                .description("Polski film historyczny z 1999 roku, w reżyserii Jerzego Hoffmana, na podstawie powieści Henryka Sienkiewicza pod tym samym tytułem.")
-                .avgScore(8.5)
                 .build();
 
         try(Session session = DefaultSessionService.getSession()) {

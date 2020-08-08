@@ -20,6 +20,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
+import pl.sda.javawwa31.hibernate.validation.AfterFirstEverDVDRelease;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -31,6 +32,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@AfterFirstEverDVDRelease   //custom validation
 @Entity
 @Table(name = "MOVIES")
 public class Movie {
