@@ -37,7 +37,7 @@ public class Movie {
     @GeneratedValue
     Long id;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", orphanRemoval = true, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     List<Copy> copies;
 
     @Column(nullable = false)
@@ -103,5 +103,9 @@ public class Movie {
 
     public List<Copy> getCopies() {
         return copies;
+    }
+
+    public void setCopies(List<Copy> copies) {
+        this.copies = copies;
     }
 }
